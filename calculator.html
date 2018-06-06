@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calculator</title>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="functions.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+</head>
+
+<body>
+<div class="w3-container w3-center">
+    <div w3-include-html="nav.html"></div> 
+    <h1>The Calculator</h1>
+        Date you spent:
+        <input type="date" name="date" id="date"/><br/><br/>
+        How much you spent: $
+        <input type="number" name="spent" id="spent"/><br/><br/>
+        Note about what was bought: 
+        <input type="text" name="note" id="note"/><br/><br/>
+        <button class="w3-btn w3-white w3-border w3-border-green w3-round-large" onclick="submit()">Submit</button>
+        <p id="result"></p>
+
+    <h1>Statistics</h1>
+        Mean: <div id="mean"></div><br/><br/>
+        Sum: <div id="sum"></div><br/><br/>
+        Standard Deviation: <div id="standarDeviation"></div><br/><br/>
+        Number of Records: <div id="count"></div><br/><br/>
+
+        <button class="w3-btn w3-white w3-border w3-border-green w3-round-large" onclick="submit2()">Get Statistics</button>
+        <p id="result2"></p>
+
+    <h1>Graphical Representation</h1>
+    
+    <canvas id="myChart"></canvas>
+
+</div>
+    
+    
+    <script>
+            w3IncludeHTML();
+    </script>
+    
+    <script>
+      var ctx = document.getElementById('myChart').getContext('2d');
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+    
+        // The data for our dataset
+        data: {
+            labels: [0],
+            datasets: [{
+                label: "Expense",
+                borderColor: 'rgb(255, 99, 132)',
+                data: [0],
+            }]
+        },
+    
+        // Configuration options go here
+        options: {
+          elements: {
+            line: {
+                tension: 0, // disables bezier curves
+            }
+        }
+        }
+    });
+
+    </script>
+</body>
+
+</html> 
