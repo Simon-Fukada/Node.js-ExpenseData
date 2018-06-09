@@ -27,3 +27,6 @@ It was great to make something with node.js, and I feel more comfortable install
 ### Most Challenging aspect of project?
 
 The connection between the database and node.js server was probably the most challenging aspect for me, but it felt so good when I finally got it working :) 
+
+### Important note about connection to SQL server
+For this to work SQL server browser service must be running and TCP/IP must be enabled in the SQL Server Configuration Manager.
