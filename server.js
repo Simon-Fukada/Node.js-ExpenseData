@@ -4,11 +4,11 @@ var sql = require('mssql');
 
 
 var dbConfig = {
-    server:"YourServer",
+    server:"yourServer",
     database:"SampleDB",
-    user:"test",
-    password:"yourPassword",
-    port:Yourport
+    user:"yourusername",
+    password:"yourpassword",
+    port:1433
 };
 
 function getEmp(){
@@ -35,7 +35,7 @@ function getEmp(){
 
 //getEmp();
 
-function insertExpense(d,p,n){
+function insertExpense(d,p,n,u){
     var pool = new sql.ConnectionPool(dbConfig);
     const req = new sql.Request(pool);
     var affectedRecords;
@@ -48,7 +48,9 @@ function insertExpense(d,p,n){
         req.input('date', sql.VarChar(100), d);
         req.input('price', sql.Decimal(10,2), p);
         req.input('note', sql.VarChar(100), n);
-        req.query('INSERT INTO expenses (Expense_date,Expense_price,Expense_note) VALUES (@date,@price,@note)', (err, result) => {
+        req.input('user', sql.VarChar(100), u);
+        req.query('INSERT INTO expenses (Expense_date,Expense_price,Expense_note,Expense_user) VALUES (@date,@price,@note,@user)', (err, result) => {
+            console.log(err); 
             affectedRecords = result.rowsAffected;
             console.log("affectedRows varible:"+affectedRecords);
             if(affectedRecords == 1)
@@ -142,15 +144,26 @@ function onRequest(request,response)
             var date = obj.date;
             var spent = obj.spent;
             var note = obj.note;
+            var user = obj.user;
 
-            var result = insertExpense(date,spent,note);
+            var result = insertExpense(date,spent,note,user);
             response.end('Submitted');
 
         });
     }
-    else if(request.method == 'GET' && request.url == '/getStatistics')
+    else if(request.method == 'POST' && request.url == '/getStatistics')
     {
+        var user = '';
         response.writeHead(200, {"content-type":"application/json"});
+        var body = '';
+        request.on('data', function (data) {
+            body += data;
+
+            obj = JSON.parse(body);
+
+            user = obj.user;
+        });
+
         var pool = new sql.ConnectionPool(dbConfig);
         var req = new sql.Request(pool);
 
@@ -159,7 +172,7 @@ function onRequest(request,response)
                 console.log(err);
                 return;
             }
-            req.query("SELECT AVG(Expense_price) as Means, SUM(Expense_price) as Sum, STDEV(Expense_price) as StdDev, COUNT(Expense_price) as Count FROM expenses",function(err,result){
+            req.query("SELECT AVG(Expense_price) as Means, SUM(Expense_price) as Sum, STDEV(Expense_price) as StdDev, COUNT(Expense_price) as Count FROM expenses WHERE Expense_user="+user,function(err,result){
                 if (err){
                     console.log(err);
                     return;
@@ -172,9 +185,20 @@ function onRequest(request,response)
             }); 
         }); 
     }
-    else if(request.method == 'GET' && request.url == '/getGraph')
+    else if(request.method == 'POST' && request.url == '/getGraph')
     {
         response.writeHead(200, {"content-type":"application/json"});
+        var user = '';
+        var body = '';
+        request.on('data', function (data) {
+            body += data;
+
+            obj = JSON.parse(body);
+
+            user = obj.user;
+            console.log("The user id =: "+user);
+        });
+
         var graphArray = [];
 
         var pool = new sql.ConnectionPool(dbConfig);
@@ -185,7 +209,8 @@ function onRequest(request,response)
                 console.log(err);
                 return;
             }
-            req.query("SELECT Expense_date FROM expenses",function(err,result){
+            console.log("The user is: "+user);
+            req.query("SELECT Expense_date FROM expenses WHERE Expense_user="+user+"order by ID",function(err,result){
                 if (err){
                     console.log(err);
                     return;
@@ -195,7 +220,7 @@ function onRequest(request,response)
                     graphArray[0] = JSONStringDates;
                 }
                 //Close use to be here
-                req.query("SELECT Expense_price FROM expenses",function(err,result){
+                req.query("SELECT Expense_price FROM expenses WHERE Expense_user="+user+"order by ID",function(err,result){
                     if (err){
                         console.log(err);
                         return;
@@ -203,10 +228,25 @@ function onRequest(request,response)
                     else{
                         JSONStringPrices= JSON.stringify(result);
                         graphArray[1] = JSONStringPrices;
-                        JSONgraphArray = JSON.stringify(graphArray);
-                        response.end(JSONgraphArray);
+                        console.log("PRICE "+graphArray[1]);
+                        //JSONgraphArray = JSON.stringify(graphArray);
+                        //response.end(JSONgraphArray);
                     }
+                    //donught graph query
+                    req.query("(select sum(Expense_price)/(select sum(Expense_price)from expenses)*100 as x from expenses where Expense_note = 'Groceries' and Expense_user = "+user+")UNION(select sum(Expense_price)/(select sum(Expense_price)from expenses)*100 from expenses where Expense_note = 'Bills' and Expense_user = "+user+"UNION(select sum(Expense_price)/(select sum(Expense_price)from expenses)*100 from expenses where Expense_note = 'Personal' and Expense_user = "+user+"))",function(err,result){
+                        if (err){
+                            console.log(err);
+                            return;
+                        }
+                        else{
+                            JSONStringPrices= JSON.stringify(result);
+                            graphArray[2] = JSONStringPrices;
+                            console.log("donught: "+graphArray[2]);
+                            JSONgraphArray = JSON.stringify(graphArray);
+                            response.end(JSONgraphArray);
+                        }
                     pool.close();
+                }); 
                 }); 
             }); 
         });

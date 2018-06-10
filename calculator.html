@@ -12,14 +12,25 @@
 
 <body>
 <div class="w3-container w3-center">
-    <div w3-include-html="nav.html"></div> 
+    <div w3-include-html="nav.html"></div>
+    <h1>Select a User</h1>
+    <h2>IMPORTANT: must refresh whole page BEFORE!!!!! switching between users otherwise graphs will be messed up</h2>
+    <select id=user>
+        <option value="1">user1</option>
+        <option value="2">user2</option>
+     </select><br/><br/> 
     <h1>The Calculator</h1>
         Date you spent:
         <input type="date" name="date" id="date"/><br/><br/>
         How much you spent: $
         <input type="number" name="spent" id="spent"/><br/><br/>
         Note about what was bought: 
-        <input type="text" name="note" id="note"/><br/><br/>
+         <select id=note>
+            <option value="Groceries">Groceries</option>
+            <option value="Personal">Personal</option>
+            <option value="Bills">Bills</option>
+         </select><br/><br/>
+        <!-- <input type="text" name="note" id="note"/><br/><br/> -->
         <button class="w3-btn w3-white w3-border w3-border-green w3-round-large" onclick="submit()">Submit</button>
         <p id="result"></p>
 
@@ -35,7 +46,10 @@
     <h1>Graphical Representation</h1>
     
     <canvas id="myChart"></canvas>
-
+    <br/>
+    <div class="chart-container" style="position: relative; height:10vh; width:20vw">
+        <canvas id="myChart2"></canvas>
+    </div>
 </div>
     
     
@@ -51,11 +65,11 @@
     
         // The data for our dataset
         data: {
-            labels: [0],
+            labels: [],
             datasets: [{
-                label: "Expense",
+                label: "Expenses",
                 borderColor: 'rgb(255, 99, 132)',
-                data: [0],
+                data: [],
             }]
         },
     
@@ -68,7 +82,28 @@
         }
         }
     });
-
+    
+    var ctx2 = document.getElementById('myChart2').getContext('2d');
+      var chart2 = new Chart(ctx2, {
+        // The type of chart we want to create
+        type: 'doughnut',
+    
+        // The data for our dataset
+        data: {
+            labels: ["personal","groceries","bills"],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(66, 134, 244)',
+                'rgb(95, 244, 65)',
+                ]
+            }]
+        },
+    
+        // Configuration options go here
+        options: {}
+    });
     </script>
 </body>
 
