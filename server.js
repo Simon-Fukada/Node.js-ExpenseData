@@ -233,7 +233,7 @@ function onRequest(request,response)
                         //response.end(JSONgraphArray);
                     }
                     //donught graph query
-                    req.query("(select sum(Expense_price)/(select sum(Expense_price)from expenses)*100 as x from expenses where Expense_note = 'Groceries' and Expense_user = "+user+")UNION(select sum(Expense_price)/(select sum(Expense_price)from expenses)*100 from expenses where Expense_note = 'Bills' and Expense_user = "+user+"UNION(select sum(Expense_price)/(select sum(Expense_price)from expenses)*100 from expenses where Expense_note = 'Personal' and Expense_user = "+user+"))",function(err,result){
+                    req.query("select sum(Expense_price)/(select sum(Expense_price)from expenses where Expense_user = "+user+")*100 as x from expenses where Expense_note = 'Groceries' and Expense_user = "+user+" UNION select sum(Expense_price)/(select sum(Expense_price)from expenses where Expense_user = "+user+")*100 from expenses where Expense_note = 'Bills' and Expense_user = "+user+" UNION select sum(Expense_price)/(select sum(Expense_price)from expenses where Expense_user = "+user+")*100 from expenses where Expense_note = 'Personal' and Expense_user = "+user+"",function(err,result){
                         if (err){
                             console.log(err);
                             return;
