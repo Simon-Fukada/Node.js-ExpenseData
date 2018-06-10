@@ -1,5 +1,4 @@
 # Node.js-ExpenseData
-# Node.js-ExpenseData
 ## Expense tracker
 
 ### What it does?
