@@ -29,3 +29,6 @@ The connection between the database and node.js server was probably the most cha
 
 ### Important note about connection to SQL server
 For this to work SQL server browser service must be running and TCP/IP must be enabled in the SQL Server Configuration Manager.
+
+## Update
+I added another chart from chart.js (doughnut chart) to help visualize what catagories spending is occuring in. This was a very good learning experience as I had to use a UNION statement in my sql quiere (which I have never had to do before)! I also added a drop down where it is possible to add users (and changed the sql as necessery). This way multiple people can be tracking their spending. 
